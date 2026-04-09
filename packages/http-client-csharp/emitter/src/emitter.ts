@@ -116,15 +116,19 @@ export async function $onEmit(context: EmitContext<CSharpEmitterOptions>) {
           const isValid = await _validateDotNetSdk(sdkContext, _minSupportedDotNetSdkVersion);
           // if the dotnet sdk is valid, the error is not dependency issue, log it as normal
           if (isValid) {
-            throw new Error(
-              `Failed to generate the library. Exit code: ${result.exitCode}.\nStackTrace: \n${result.stderr}`,
+            sdkContext.logger.error(
+              `Failed to generate the library. Exit code: ${result.exitCode}.\n${result.stderr}`,
             );
           }
         }
       } catch (error: any) {
         const isValid = await _validateDotNetSdk(sdkContext, _minSupportedDotNetSdkVersion);
         // if the dotnet sdk is valid, the error is not dependency issue, log it as normal
-        if (isValid) throw new Error(error);
+        if (isValid) {
+          sdkContext.logger.error(
+            `Failed to generate the library. Error: ${error.message ?? error}`,
+          );
+        }
       }
       if (!options["save-inputs"]) {
         // delete
